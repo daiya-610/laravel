@@ -27,17 +27,21 @@ DB_PASSWORD=password123
 php artisan migrate
 ```
 
-6\. 
-```
+6\. 初期設定（タイムゾーン、言語設定）
+```php:laravel_api/config/app.php
+'timezone' => 'Asia/Tokyo',
+'locale' => 'ja',
 ```
 
-7\. 
+7\. デバックバーのインストール（DBとの接続内容やHTTPの中身がわかったりして便利）
 ```
+composer require barryvdh/laravel-debugbar
 ```
 --- 
 
-1\. 
-```
+1\. デバックモードの確認
+```env
+APP_DEBUG=true // 開発時はtrue、本番環境時はfalseにする
 ```
 
 2\. 
