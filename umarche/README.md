@@ -1,5 +1,6 @@
 # 方法
 
+## sec01
 1\. プロジェクト作成
 ```
 $ composer create-project laravel/laravel umarche "10.*" --prefer-dist
@@ -44,12 +45,13 @@ composer require barryvdh/laravel-debugbar
 APP_DEBUG=true // 開発時はtrue、本番環境時はfalseにする
 ```
 
-9\. Larave Breezeのインストール
+## sec02
+1\. Larave Breezeのインストール
 ```
 composer require laravel/breeze --dev // Using version ^1.29 for laravel/breeze
 ```
 
-10\. breeze:installコマンド実行
+2\. breeze:installコマンド実行
 ```
 php artisan breeze:install
 
@@ -58,15 +60,40 @@ npm install
 npm run dev
 ```
 
-4\. 
-4-1\. 
+## sec03 日本語化
+- 参照：
+* https://readouble.com/laravel/10.x/ja/localization.html
+* https://fadotech.com/larave10-japanese/
+* https://github.com/askdkc/breezejp/tree/main/stubs/lang/ja
+
+1\. フォルダ生成 - laravel10の場合デフォルトでフォルダが生成されなかった
+```
+php artisan lang:publish
+
+mkdir lang/ja
+cd lang/ja
+touch auth.php pagenation.php passwords.php validation.php
+```
+
+2\. lang/enのファイルを元にjaのファイルを編集（日本語化）
 ```
 ```
 
-4-2\. 
+5\. 確認
 ```
 ```
-
+5\. 確認
+```
+```
+5\. 確認
+```
+```
+5\. 確認
+```
+```
+5\. 確認
+```
+```
 5\. 確認
 ```
 ```
