@@ -75,25 +75,77 @@ cd lang/ja
 touch auth.php pagenation.php passwords.php validation.php
 ```
 
-2\. lang/enのファイルを元にjaのファイルを編集（日本語化）
+2\. lang/enのファイルを元にjaディレクトリ4つのファイルを編集（日本語化）
+* 参照：https://github.com/askdkc/breezejp/tree/main/stubs/lang/ja
+
+3\.lang/jaに別途jsonファイル作成 
 ```
+cd lang/ja
+touch ja.json
 ```
 
-5\. 確認
+4\. jsonファイルを編集
+```json:lang/ja/ja.json
+{"Whoops! Something went wrong.": "すみません、サーバーで何か問題が発生しました。"}
+// あってもなくてもいい
 ```
+
+5\. http://127.0.0.1:8000/registerにてバリデーションチェック＋ユーザアカウント作成
 ```
-5\. 確認
+ユーザ名：テスト
+メール：test@test.com
+パスワード:password123
 ```
+
+## sec04 component 準備
+1\. routesを編集
+```php:routes/web.php
+use App\Http\Controllers\ComponentTestController;
+
+Route::get('/component-test1', [ComponentTestController::class, 'showComponent1']);
+Route::get('/component-test2', [ComponentTestController::class, 'showComponent2']);
+
 ```
-5\. 確認
+2\. コントローラの作成
 ```
+php artisan make:controller ComponentTestController
 ```
-5\. 確認
+- 作成されているか確認(Http > Controllers > ComponentTestController.php)
+
+3\. 作成したコントローラの編集
+```php:Http/Controllers/ComponentTestController.php
+class ComponentTestController extends Controller
+{
+    //
+    public function showComponent1(){
+        return view('tests.component-test1');
+    }
+    public function showComponent2(){
+        return view('tests.component-test2');
+    }
+}
 ```
+4\. testsフォルダ作成
 ```
-5\. 確認
+mkdir views/tests
+cd views/tests
+touch component-test1.blade.php component-test2.blade.php 
 ```
+5\. 作成したファイルの編集
+```php:views/tests/component-test1.blade.php 
+コンポーネントテスト１
 ```
-5\. 確認
+```php:views/tests/component-test2.blade.php 
+コンポーネントテスト２
+```
+
+6\. 簡易サーバで確認(http://127.0.0.1:8000/component-test1)
+```
+php artisan serve
+```
+
+
+
+1\. 確認
 ```
 ```
