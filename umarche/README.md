@@ -39,17 +39,23 @@ composer require barryvdh/laravel-debugbar
 ```
 --- 
 
-1\. デバックモードの確認
+8\. デバックモードの確認
 ```env
 APP_DEBUG=true // 開発時はtrue、本番環境時はfalseにする
 ```
 
-2\. 
+9\. Larave Breezeのインストール
 ```
+composer require laravel/breeze --dev // Using version ^1.29 for laravel/breeze
 ```
 
-3\. 
+10\. breeze:installコマンド実行
 ```
+php artisan breeze:install
+
+php artisan migrate
+npm install
+npm run dev
 ```
 
 4\. 
