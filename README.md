@@ -203,3 +203,17 @@ php artisan vendor:publish --tag=sanctum-migrations  // sanctum用のmigration�
 ```
 php artisan route:list
 ```
+
+---
+---
+# Laravel 構文関係
+## Componentのパターン
+- 1つのコンポーネント（部品）を複数ページで使用可能
+- コンポーネント側を修正すると全て反映される。
+
+## Componentの書き方
+- resources/views/components フォルダ内に配置
+- <x-コンポーネント名></x-コンポーネント名>
+- フォルダで分けたい場合
+- resources/views/components/tests フォルダの場合
+<x-tests.コンポーネント名></x-tests.コンポーネント名>

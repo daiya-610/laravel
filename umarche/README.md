@@ -145,7 +145,43 @@ php artisan serve
 ```
 
 
+## sec05 slotの使用方法
+1\. フォルダ・ファイル作成
+```
+mkdir resources/views/components/tests
+cd resources/views/components/tests
+touch app.blade.php
+```
 
-1\. 確認
+2\. コピペ
+- 下記ファイルの内容をコピーする
+- resources/views/layouts/guest.blade.php
+```php:resources/views/components/tests
+// guest.blade.phpのコードをペースト
+```
+
+3\. コンポーネントの表示内容を編集
+```php:resources/views/tests/component-test1.blade.php
+<x-tests.app>
+コンポーネントテスト１
+</x-tests.app>
+```
+
+4\. ローカルサーバを立ち上げて確認する
+```
+php artisan serve
+```
+- http://127.0.0.1:8000/component-test1
+- 表示デザインが変更されている。
+- DevToolsで確認するとheadタグでscript・linkタグが読み込まれていることがわかる。
+
+5\. component-test2にも同じ内容を反映しておく
+```php:resources/views/tests/component-test2.blade.php
+<x-tests.app>
+コンポーネントテスト２
+</x-tests.app>
+```
+
+1\. フ
 ```
 ```
