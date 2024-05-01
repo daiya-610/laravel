@@ -1,20 +1,3 @@
-# docker 
-https://zenn.dev/eguchi244_dev/articles/laravel-and-docker-introduction-20230822
-
-https://zenn.dev/holy0306/articles/2ba88724f5af69
-
-
-1\. プロジェクト作成
-```
-$ mkdir 〇〇 ←プロジェクト名 例)
-$ cd 
-```
-
-2\. docker-compose.ymlファイル作成
-```
-$ touch docker-compose.yml
-```
-```yml
 services:
     laravel.test:
         build:
@@ -140,50 +123,3 @@ volumes:
         driver: local
     sail-meilisearch:
         driver: local
-```
-
-3\. 
-```
-```
-
-4\. 
-```
-```
-
-5\. 
-```
-```
-
-6\. 
-```
-```
-
-7\. 
-```
-```
---- 
-
-1\. 
-```
-```
-
-2\. 
-```
-```
-
-3\. 
-```
-```
-
-4\. 
-4-1\. 
-```
-```
-
-4-2\. 
-```
-```
-
-5\. 確認
-```
-```
