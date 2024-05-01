@@ -182,6 +182,42 @@ php artisan serve
 </x-tests.app>
 ```
 
-1\. フ
+## sec05 名前付きslotの使用方法
+1\. Bladeコンポーネント側でコンテンツを表示させたい変数名を用意しておく
+```php:resources/views/components/tests/app.blade.php
+<body>
+    <header>
+        {{ $header }}
+    </header>
+...
+</body>
+```
+
+2\. コンテンツを渡す側のファイルに変更を加える
+```php:umarche/resources/views/tests/component-test1.blade.php
+<x-tests.app>
+    <x-slot name="header">ヘッダー１</x-slot>
+    コンポーネントテスト１
+</x-tests.app>
+```
+
+```php:umarche/resources/views/tests/component-test2.blade.php
+<x-tests.app>
+    <x-slot name="header">ヘッダー２</x-slot>
+    コンポーネントテスト２
+</x-tests.app>
+```
+
+3\. ローカルサーバを立ち上げて確認する
+```
+php artisan serve
+```
+- http://127.0.0.1:8000/component-test1
+
+1\. 
+```
+```
+
+1\. 
 ```
 ```

@@ -217,3 +217,25 @@ php artisan route:list
 - フォルダで分けたい場合
 - resources/views/components/tests フォルダの場合
 <x-tests.コンポーネント名></x-tests.コンポーネント名>
+
+## Slotの使い方
+- slotを使用する場合、component側で「{{ $slot }}」という変数を付けることで使用できる。
+- マスタッシュ構文：波括弧を2つ付ける構文「{{}}」 
+<!-- マスタッシュ：口ひげという意味 -->
+```php
+// Component側
+{{ $slot }}
+
+// Blade側
+<x-app>テストテスト</x-app>
+```
+
+### 名前付きSlot
+- Slotを複数使用する場合
+```php
+// Component側
+{{ $header }}
+
+// Blade側
+<x-slot name="header">テストテスト</x-slot>
+```
