@@ -272,15 +272,82 @@ public function showComponent1(){
     <x-tests.card title="タイトル" content="本文" :message="$message" /> // 「:」を付けないと属性と認識されそのまま表示されてしまう。コントローラーにて変数設定:app/Http/Controllers/ComponentTestController.php
 </x-tests.app>
 ```
-2\. 
+
+## sec07 Componentのパターン - 初期値の設定（@props）
+- 変数名が定義されてない場合エラーとなる：エラーメッセージ「Undefined variable $content」
+- 予め初期値を設定しておくことでエラーを防ぐ
+
+1\. コンテンツを渡す側のファイルに変更を加える
+```php:resources/views/tests/component-test1.blade.php
+<x-tests.app>
+    <x-slot name="header">ヘッダー１</x-slot>
+    コンポーネントテスト１
+
+    <x-tests.card title="タイトル" content="本文" :message="$message" />
+    <x-tests.card title="タイトル2" /> // 追加
+    // <x-tests.card title="タイトル2" content="本文2" :message="$message"/> ←のように「title, content, messageを定義しないとエラーが返ってくる。」
+</x-tests.app>
+```
+
+2\. ローカルサーバで確認(http://127.0.0.1:8000/component-test1)
+```
+php artisan serve
+```
+- エラーメッセージが返ってくる：Undefined variable $content
+
+3\. Bladeコンポーネント側のファイルに初期値（@props）を設定する
+```php:resources/views/components/tests/card.blade.php
+@props([
+    'title',
+    'message' => '初期値です。',
+    'content' => '本文初期値です。'
+]) // 追加：propsは連想配列の形式で書く。 初期値が特に必要ない場合はプロパティ名のみでOK
+<div class="border-2 shadow-md w-1/4 p-2">
+    <div>{{ $title }}</div>
+    <div>画像</div>
+    <div>{{ $content }}</div>
+    <div>{{ $message }}</div>
+</div>
+@props(['message' => '初期値です。']) 
+<div class="border-2 shadow-md w-1/4 p-2">
+    <div>{{ $title }}</div>
+    <div>画像</div>
+    <div>{{ $content }}</div>
+    <div>{{ $message }}</div>
+</div>
+```
+
+4\. 初期値（@props）を設定したのでコンテンツを渡す側のファイルに変更を加える
+```php:resources/views/tests/component-test1.blade.php
+<x-tests.app>
+    <x-slot name="header">ヘッダー１</x-slot>
+    コンポーネントテスト１
+
+    <x-tests.card title="タイトル" content="本文" :message="$message" />
+    <x-tests.card title="タイトル2" />
+    <!-- <x-tests.card title="タイトル2" content="本文2" :message="$message"/>  // 初期値（@props）を設定しない場合は左記のように全て定義しないとエラーになる。--> 
+</x-tests.app>
+```
+
+5\. ローカルサーバで確認(http://127.0.0.1:8000/component-test1)
+```
+php artisan serve
+```
+- 初期値を設定したため、エラーなく表示されることを確認。
+
+
+1\. 
 ```
 ```
-2\. 
+1\. 
 ```
 ```
-2\. 
+1\. 
 ```
 ```
-2\. 
+1\. 
+```
+```
+1\. 
 ```
 ```
