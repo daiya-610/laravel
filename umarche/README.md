@@ -244,14 +244,33 @@ touch resources/views/components/tests/card.blade.php
 php artisan serve
 ```
 
-1\. 
+## sec06 Componentのパターン - データの受け渡し方法：変数
+1\. 変数を受け渡すためのコントローラを編集
+```php:app/Http/Controllers/ComponentTestController.php
+public function showComponent1(){
+        $message = 'メッセージ'; // 追加
+        return view('tests.component-test1',
+    compact('message')); // 編集：セミコロンと変数名を追加
+    }
 ```
+2\. Bladeコンポーネント側でコンテンツを表示させたい変数名を追加する
+```php:resources/views/components/tests/card.blade.php
+<div class="border-2 shadow-md w-1/4 p-2">
+    <div>{{ $title }}</div>
+    <div>画像</div>
+    <div>{{ $content }}</div>
+    <div>{{ $message }}</div> // 追加
+</div>
 ```
-2\. 
-```
-```
-2\. 
-```
+
+3\. コンテンツを渡す側のファイルに変更を加える
+```php:resources/views/tests/component-test1.blade.php
+<x-tests.app>
+    <x-slot name="header">ヘッダー１</x-slot>
+    コンポーネントテスト１
+
+    <x-tests.card title="タイトル" content="本文" :message="$message" /> // 「:」を付けないと属性と認識されそのまま表示されてしまう。コントローラーにて変数設定:app/Http/Controllers/ComponentTestController.php
+</x-tests.app>
 ```
 2\. 
 ```
