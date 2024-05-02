@@ -139,7 +139,7 @@ touch component-test1.blade.php component-test2.blade.php
 コンポーネントテスト２
 ```
 
-6\. 簡易サーバで確認(http://127.0.0.1:8000/component-test1)
+6\. ローカルサーバで確認(http://127.0.0.1:8000/component-test1)
 ```
 php artisan serve
 ```
@@ -194,7 +194,7 @@ php artisan serve
 ```
 
 2\. コンテンツを渡す側のファイルに変更を加える
-```php:umarche/resources/views/tests/component-test1.blade.php
+```php:resources/views/tests/component-test1.blade.php
 <x-tests.app>
     <x-slot name="header">ヘッダー１</x-slot>
     コンポーネントテスト１
@@ -214,10 +214,54 @@ php artisan serve
 ```
 - http://127.0.0.1:8000/component-test1
 
-1\. 
+## sec06 Componentのパターン - データの受け渡し方法：属性
+1\. Bladeコンポーネント側のファイルを1つ作成し
+コンテンツを表示させたい変数名を用意しておく
 ```
+touch resources/views/components/tests/card.blade.php
+```
+
+```php:resources/views/components/tests/card.blade.php
+<div class="border-2 shadow-md w-1/4 p-2">
+    <div>{{ $title }}</div>
+    <div>画像</div>
+    <div>{{ $content }}</div>
+</div>
+``` 
+
+2\. コンテンツを渡す側のファイルに変更を加える
+```php:resources/views/tests/component-test1.blade.php
+<x-tests.app>
+    <x-slot name="header">ヘッダー１</x-slot>
+    コンポーネントテスト１
+    
+    <x-tests.card title="タイトル" content="本文" />
+</x-tests.app>
+```
+
+3\. ローカルサーバで確認(http://127.0.0.1:8000/component-test1)
+```
+php artisan serve
 ```
 
 1\. 
+```
+```
+2\. 
+```
+```
+2\. 
+```
+```
+2\. 
+```
+```
+2\. 
+```
+```
+2\. 
+```
+```
+2\. 
 ```
 ```
