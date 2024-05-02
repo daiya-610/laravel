@@ -335,19 +335,60 @@ php artisan serve
 ```
 - 初期値を設定したため、エラーなく表示されることを確認。
 
+## sec08 Componentのパターン - 属性バッグ（$attribute）
+- 属性バッグ：CSSのクラスを渡す際に使用される機能
+1\. コンテンツを渡す側のファイルに変更を加える
+```php:resources/views/tests/component-test1.blade.php
+<x-tests.app>
+    <x-slot name="header">ヘッダー１</x-slot>
+    コンポーネントテスト１
 
-1\. 
+    <x-tests.card title="タイトル" content="本文" :message="$message" />
+    <x-tests.card title="タイトル2" />
+    <x-tests.card title="CSSを変更したい" class="bg-red-300" /> // 追加
+</x-tests.app>
 ```
+- この状態だとこのクラスは有効にならない。
+- Bladeコンポーネント側のファイルに新しく変数を作る必要がある。
+
+2\. Bladeコンポーネント側のファイルに属性バッグ（$attribute）を追加する
+```php:resources/views/components/tests/card.blade.php
+@props([
+    'title',
+    'message' => '初期値です。',
+    'content' => '本文初期値です。'
+])
+
+<div {{ $attributes->merge([
+    'class' => 'border-2 shadow-md w-1/4 p-2'
+]) }} > // 追加
+    <div>{{ $title }}</div>
+    <div>画像</div>
+    <div>{{ $content }}</div>
+    <div>{{ $message }}</div>
+</div>
 ```
-1\. 
+
+3\. tailwindd.cssを読み込ませる
+```json:package.json
+"scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "watch": "webpack --watch" // 追加
+},
 ```
+
 ```
-1\. 
+npm install
+npm run watch
 ```
+
+4\. ローカルサーバで確認(http://127.0.0.1:8000/component-test1)
 ```
-1\. 
+php artisan serve
 ```
-```
+- 最後のブロックだけ背景色が背景色が付いている事を確認
+
 1\. 
 ```
 ```
