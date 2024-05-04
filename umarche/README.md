@@ -361,7 +361,7 @@ php artisan serve
 
 <div {{ $attributes->merge([
     'class' => 'border-2 shadow-md w-1/4 p-2'
-]) }} > // 追加
+]) }} > // 追加 merge：コンテンツを渡す側のファイルと表示させたい側のファイルで指定しているclass名が干渉しうまく表示されないためmergeを使用
     <div>{{ $title }}</div>
     <div>画像</div>
     <div>{{ $content }}</div>
@@ -389,6 +389,88 @@ php artisan serve
 ```
 - 最後のブロックだけ背景色が背景色が付いている事を確認
 
+## sec09 Componentのパターン - クラスベース
+1\. クラスの作成
+- TestClassBasemというClass名を作詞
+```
+php artisan make:component TestClassBase
+```
+- 下記メッセージが表示されていればOK
+- Component [app/View/Components/TestClassBase.php] created successfully.  
+
+*** 補足 ***
+```php:app/View/Components/TestClassBase.php
+class TestClassBase extends Component
+{
+    /**
+     * Create a new component instance.
+     */
+    public function __construct() // ここで変数などを設定する
+    {
+        //
+    }
+
+    /**
+     * Get the view / contents that represent the component.
+     */ // viewファイル側に渡す処理
+    public function render(): View|Closure|string
+    {
+        return view('components.test-class-base');
+    }
+}
+
+```
+
+2\. 作成されたBladeコンポーネント側のファイルをtestsフォルダの中に移動させる。
+```
+ mv resources/views/components/test-class-base.blade.php resources/views/components/tests
+```
+
+3\. ファイルの移動したので先ほど作成したクラスのファイルも編集する
+```php:app/View/Components/TestClassBase.php
+public function render(): View|Closure|string
+    {
+        return view('components.tests.test-class-base');
+    }
+```
+
+4\. Bladeコンポーネント側のファイルを編集する
+```php:resources/views/components/tests/test-class-base.blade.php
+<div>
+    クラスベースのコンポーネントです。
+    使用する場合は
+    App/View/Components内のクラスを指定する。
+    クラス名・・・TestClassBase(パスカルケース)
+    Blade内・・・x-test-class-base(ケバブケース)
+
+    コンポーネントクラス内で
+    public funtion render(){
+        return view('bladeコンポーネント名')
+    }
+</div>
+```
+
+5\. コンテンツを渡す側のファイルを編集する
+```php:resources/views/tests/component-test2.blade.php
+<x-tests.app>
+    <x-slot name="header">ヘッダー２</x-slot>
+    コンポーネントテスト２
+    <x-test-class-base /> // 追加
+</x-tests.app>
+```
+
+6\. ローカルサーバを立ち上げて確認する
+```
+php artisan serve
+```
+- http://127.0.0.1:8000/component-test2
+- 表示デザインが変更されている。
+- コンテンツを渡す側のファイルにクラス名を指定してあげると(1)クラスが呼び出される(TestClassBase.php)。(2)renderメソッドの中に記載してあるコンポーネントが表示される(test-class-base.blade.php)。
+
+##
+1\. 
+```
+```
 1\. 
 ```
 ```
