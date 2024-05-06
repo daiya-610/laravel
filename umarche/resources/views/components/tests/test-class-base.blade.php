@@ -9,4 +9,6 @@
     public funtion render(){
         return view('bladeコンポーネント名')
     }
+    <div>{{ $classBaseMessage }}</div>
+    <div>{{ $defaultMessage }}</div>
 </div>

@@ -8,12 +8,15 @@ use Illuminate\View\Component;
 
 class TestClassBase extends Component
 {
+    public $classBaseMessage;
+    public $defaultMessage;
     /**
      * Create a new component instance.
      */
-    public function __construct()
+    public function __construct($classBaseMessage, $defaultMessage="初期値です。")
     {
-        //
+        $this->classBaseMessage = $classBaseMessage;
+        $this->defaultMessage = $defaultMessage;
     }
 
     /**
