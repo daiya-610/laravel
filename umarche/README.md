@@ -772,7 +772,7 @@ $sample->run();
 dd($test, app());
 ```
 
-2\. 再度ローカルサーバを立ち上げて確認する
+4\. 再度ローカルサーバを立ち上げて確認する
 ```
 php artisan serve
 ```
@@ -781,15 +781,36 @@ php artisan serve
 - 見た目は同じだが、サービスコンテナを使用する場合newのインスタンス化をしなくても使用できる。
 - Sample::classでMessage内のクラスも設定する必要があったが、自動的に依存関係を解決してこの「app()->make('sample')」だけで使用できるようになっていることが特徴。
 
-1\.
+## sec11 サービスプロバイダー
+1\. ルーティングファイルを編集する
+```php:routes/web.php
+Route::get('/component-test1', [ComponentTestController::class, 'showComponent1']);
+Route::get('/component-test2', [ComponentTestController::class, 'showComponent2']);
+Route::get('/servicecontainertest', [LifeCycleTestController::class, 'showServiceContainerTest']);
+Route::get('/serviceprovidertest', [LifeCycleTestController::class, 'showServiceProviderTest']); // 追加（URL, メソッド）
 ```
+2\. コントローラファイルを編集する
+```php:app/Http/Controllers/LifeCycleTestController.php
+class LifeCycleTestController extends Controller
+{
+    // 追加
+    public function showServiceProviderTest()
+    {
+        $encrypt = app()->make('encrypter');
+        $password = $encrypt->encrypt('password');
+        dd($password, $encrypt->decrypt($password));
+    }
+    
+    public function showServiceContainerTest()
 ```
-1\.
+
+1\. ローカルサーバを立ち上げて確認する
 ```
+php artisan serve
 ```
-1\.
-```
-```
+- http://127.0.0.1:8000/serviceprovidertest
+- 画面にはencryptメソッドを使って「password」が暗号化されて文字とdecryptメソッドを使って元に戻した文字「password」が表示されている
+
 1\.
 ```
 ```
