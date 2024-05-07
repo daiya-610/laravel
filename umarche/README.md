@@ -466,3 +466,342 @@ php artisan serve
 - http://127.0.0.1:8000/component-test2
 - 表示デザインが変更されている。
 - コンテンツを渡す側のファイルにクラス名を指定してあげると(1)クラスが呼び出される(TestClassBase.php)。(2)renderメソッドの中に記載してあるコンポーネントが表示される(test-class-base.blade.php)。
+
+## sec09 Componentのパターン - クラスベースと匿名コンポーネントの違い
+- クラスベースはclassなのでコンストラクタを使用できる。
+- Laravel Breezeで追加されるファイルは匿名コンポーネントで作られるのでまずはこちらの方法を覚える。
+- 変数などを分離させたい場合はクラスベースで作る。
+
+1\. Bladeコンポーネント側でコンテンツを表示させたい箇所に変数を設定する
+```php:resources/views/components/tests/test-class-base.blade.php
+<div>
+    クラスベースのコンポーネントです。
+    使用する場合は
+    App/View/Components内のクラスを指定する。
+    クラス名・・・TestClassBase(パスカルケース)
+    Blade内・・・x-test-class-base(ケバブケース)
+
+    コンポーネントクラス内で
+    public funtion render(){
+        return view('bladeコンポーネント名')
+    }
+    <div>{{ $classBaseMessage }}</div>
+</div>
+```
+
+2\. コンテンツを渡す側のファイルを編集する
+```php:resources/views/tests/component-test2.blade.php
+<x-tests.app>
+    <x-slot name="header">ヘッダー２</x-slot>
+    コンポーネントテスト２
+    <x-test-class-base classBaseMessage="メッセージです" /> // 追加:test-class-baseがクラスベースのコンポーネントなのでこの後に属性を付ける。
+</x-tests.app>
+```
+- 次に、クラスベースのclassに使用する属性を作成する必要がある。
+
+3\. クラスのファイルを編集する
+```php:app/View/Components/TestClassBase.php
+class TestClassBase extends Component
+{
+    public $classBaseMessage;
+    /**
+     * Create a new component instance.
+     */
+    public function __construct($classBaseMessage)
+    {
+        $this->classBaseMessage = $classBaseMessage;
+    }
+
+    /**
+     * Get the view / contents that represent the component.
+     */
+    public function render(): View|Closure|string // 補足：コンストラクタで設定している場合はrenderメソッドの方で変数を渡す必要はない。特に変更なし
+    {
+        return view('components.tests.test-class-base');
+    }
+}
+
+```
+
+4\. ローカルサーバを立ち上げて確認する
+```
+php artisan serve
+```
+- http://127.0.0.1:8000/component-test2
+
+---
+
+5\. クラスベース - 初期値の設定 
+ クラスのファイルを編集する
+```php:app/View/Components/TestClassBase.php
+class TestClassBase extends Component
+{
+    public $classBaseMessage;
+    public $defaultMessage; // 追加
+    /**
+     * Create a new component instance.
+     */
+    public function __construct($classBaseMessage, $defaultMessage="初期値です。") // 追加
+    {
+        $this->classBaseMessage = $classBaseMessage;
+        $this->defaultMessage = $defaultMessage; // 追加
+    }
+
+    /**
+     * Get the view / contents that represent the component.
+     */
+    public function render(): View|Closure|string
+    {
+        return view('components.tests.test-class-base');
+    }
+}
+
+```
+
+6\. Bladeコンポーネント側でコンテンツを表示させたい箇所に初期値を設定する
+```php:resources/views/components/tests/test-class-base.blade.php
+<div>
+・・・
+    <div>{{ $classBaseMessage }}</div>
+    <div>{{ $defaultMessage }}</div>
+</div>
+```
+
+7\. コンテンツを渡す側のファイルを編集する
+```php:resources/views/tests/component-test2.blade.php
+<x-tests.app>
+    <x-slot name="header">ヘッダー２</x-slot>
+    コンポーネントテスト２
+    <x-test-class-base classBaseMessage="メッセージです" />
+    <div class="mb-4"></div> // 追加：ただ見やすいように改行
+    <x-test-class-base classBaseMessage="メッセージです" defaultMessage="初期値から変更しています" /> // 追加
+</x-tests.app>
+```
+
+8\. ローカルサーバを立ち上げて確認する
+```
+php artisan serve
+```
+- http://127.0.0.1:8000/component-test2
+- コンポーネントを2回使っているのでクラスが2回表示される。
+- 初期値の箇所を設定していないとコンストラクター側で設定した値が入り、上書きすると値が変更されて表示される
+
+## sec10 サービスコンテナ 作成
+1\. 準備としてルーティングファイルに追記する
+```php:routes/web.php
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ComponentTestController;
+use App\Http\Controllers\LifeCycleTestController; // 追記
+・・・
+Route::get('/component-test1', [ComponentTestController::class, 'showComponent1']);
+Route::get('/component-test2', [ComponentTestController::class, 'showComponent2']);
+Route::get('/servicecontainertest', [LifeCycleTestController::class, 'showServiceContainerTest']); // 追記
+```
+
+2\. コマンドでコントローラを作成
+```
+php artisan make:controller LifeCycleTestController
+```
+
+3\.  コントローラの中でメソッドが必要なので作成されたコントローラファイルを編集する
+```php:app/Http/Controllers/LifeCycleTestController.php
+class LifeCycleTestController extends Controller
+{
+    // 追記
+    public function showServiceContainerTest()
+    {
+        dd(app()); // appのヘルパー関数を使うとサービスコンテナの中身を確認できる
+    }
+}
+```
+
+4\. この状態でローカルサーバを立ち上げて確認する
+```
+php artisan serve
+```
+- http://127.0.0.1:8000/servicecontainertest
+- bindings: サービスコンテナに登録されているサービスの数(71と表示されている)
+
+5\. サービスコンテナに登録する（コントローラファイル）
+- app()->bind('lifeCycleTest', function(){
+    return 'ライフサイクルテスト';
+});
+引数(取り出す時の名前, 機能);
+Bindinsgs:の数が71->72に増える
+
+```php:app/Http/Controllers/LifeCycleTestController.php
+class LifeCycleTestController extends Controller
+{
+    //
+    public function showServiceContainerTest()
+    {
+        app()->bind('lifeCycleTest', function(){
+            return 'ライフサイクルテスト';
+        }); // 追記
+        
+        dd(app());
+    }
+}
+```
+- 再度ローカルサーバを立ち上げて確認する(http://127.0.0.1:8000/servicecontainertest)
+- lifeCycleTestという項目が追加されている
+
+6\. サービスコンテナから取り出す
+- $test = app()->make('lifeCycleTest');
+
+- 他の書き方
+$test = app('lifeCycleTest');
+$test = resolve('lifeCycleTest');
+$test = App::make('lifeCycleTest');
+
+```php:app/Http/Controllers/LifeCycleTestController.php
+class LifeCycleTestController extends Controller
+{
+    //
+    public function showServiceContainerTest()
+    {
+        app()->bind('lifeCycleTest', function(){
+            return 'ライフサイクルテスト';
+        });
+
+        $test = app()->make('lifeCycleTest'); // 追加
+
+        dd($test, app()); // 編集
+    }
+}
+```
+
+## sec10 サービスコンテナ 依存関係
+0\. 依存関係の解決
+- 依存した2つのクラス
+- それぞれインスタンス化後に実行
+```php
+$message = new Message();
+$sample = new Sample($message);
+$sample->run();
+```
+
+- サービスコンテナを使ったパターン
+```php
+app->bind('sample', Sample::class);
+$sample = app()->make('sample');
+$sample->run();
+```
+- サービスコンテナを使っておくとbindで紐づけてapp()->makeで使う際に関連するクラス(依存してるクラス)も同時にインスタンス化してくれる
+- new でインスタンス化しなくても使用できる
+
+1\. コントローラファイルを編集する
+- 本来は1ファイルに1クラスだがテストのため複数のクラスを書いていく
+```php:app/Http/Controllers/LifeCycleTestController.php
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class LifeCycleTestController extends Controller
+{
+    //
+    public function showServiceContainerTest()
+    {
+        app()->bind('lifeCycleTest', function(){
+            return 'ライフサイクルテスト';
+        });
+
+        $test = app()->make('lifeCycleTest');
+
+        // ③追加
+        // サービスコンテナなしのパターン
+        $message = new Message(); // インスタンス化
+        $sample = new Sample($message); //クラスのインスタンスを引数に渡している
+        $sample->run();
+
+        dd($test, app());
+    }
+}
+
+// ②追加：Sampleクラスの方でconstructで初期化するときにMessageクラスも使うと設定する。
+// Sampleクラスを使うときは予めMessageクラスをインスタンス化しておく必要がある。
+class Sample
+{
+    public $message;
+    // インスタンス化する時にメッセージも読み込む
+    // DI：引数（Message）の方にクラス名を入れてあげると自動的にインスタンス化してくれる
+    public function __construct(Message $message){
+        $this->message = $message;
+    }
+    public function run(){
+        $this->message->send();
+    }
+}
+
+// ①追加
+class Message 
+{
+    public function send(){
+        echo('メッセージ表示');
+    }
+}
+
+```
+
+2\. ローカルサーバを立ち上げて確認する
+```
+php artisan serve
+```
+- http://127.0.0.1:8000/servicecontainertest
+- 一番上に「メッセージ表示」とされていることがわかる
+
+- サービスコンテナを使わないパターンであればそれぞれのクラスを一度インスタンス化してあげれば使用可能
+
+3\. サービスコンテナありのパターンでコントローラファイルを編集する
+```php:app/Http/Controllers/LifeCycleTestController.php
+<?php
+// サービスコンテナなしのパターン
+// $message = new Message();
+// $sample = new Sample($message);
+// $sample->run();
+
+// サービスコンテナ「app()」ありのパターン
+app()->bind('sample', Sample::class); // app()のヘルパー関数。bindで紐づける。紐づける際に呼び出す名前を付ける必要があるのでSampleとしておく。今回classを付けるということでSample::classと書いてあげるとclassを紐づけることができる。
+$sample = app()->make('sample'); // サービスコンテナから取り出す処理はapp()->make 呼び出す名前はsampleとすればOK。これを変数に置く必要があるので$sampleとしておく。
+// sampleの中のrunメソッドを表示する。
+$sample->run();
+
+dd($test, app());
+```
+
+2\. 再度ローカルサーバを立ち上げて確認する
+```
+php artisan serve
+```
+- http://127.0.0.1:8000/servicecontainertest
+- サービスコンテナなしと同様一番上に「メッセージ表示」とされていることがわかる
+- 見た目は同じだが、サービスコンテナを使用する場合newのインスタンス化をしなくても使用できる。
+- Sample::classでMessage内のクラスも設定する必要があったが、自動的に依存関係を解決してこの「app()->make('sample')」だけで使用できるようになっていることが特徴。
+
+1\.
+```
+```
+1\.
+```
+```
+1\.
+```
+```
+1\.
+```
+```
+1\.
+```
+```
+1\.
+```
+```
+1\.
+```
+```
+1\.
+```
+```
