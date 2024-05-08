@@ -781,7 +781,7 @@ php artisan serve
 - 見た目は同じだが、サービスコンテナを使用する場合newのインスタンス化をしなくても使用できる。
 - Sample::classでMessage内のクラスも設定する必要があったが、自動的に依存関係を解決してこの「app()->make('sample')」だけで使用できるようになっていることが特徴。
 
-## sec11 サービスプロバイダー
+## sec11 サービスプロバイダー 使用方法
 1\. ルーティングファイルを編集する
 ```php:routes/web.php
 Route::get('/component-test1', [ComponentTestController::class, 'showComponent1']);
@@ -811,15 +811,95 @@ php artisan serve
 - http://127.0.0.1:8000/serviceprovidertest
 - 画面にはencryptメソッドを使って「password」が暗号化されて文字とdecryptメソッドを使って元に戻した文字「password」が表示されている
 
-1\.
+## sec11 サービスプロバイダー 生成
+1\. サービスプロバイダーを生成する
 ```
+php artisan make:provider SampleServiceProvider
 ```
-1\.
+- App/Providers配下に生成
+
+- 補足
+```php
+public function register(){
+    サービスを登録するコード
+}
+
+public function boot(){
+    前サービスプロバイダー読み込み後に
+    実行したいコード
+}
 ```
+
+2\. コントローラファイルを編集する
+```php:app/Http/Controllers/LifeCycleTestController.php
+
 ```
-1\.
+
+- 復習
+```php:app/Http/Controllers/LifeCycleTestController.php
+<?php
+// app()->bindでサービスコンテナに登録した名前とその処理の内容を書いている
+public function showServiceContainerTest()
+{
+    app()->bind('lifeCycleTest', function(){
+        return 'ライフサイクルテスト';
+        });
+}
 ```
+
+2\. 実際にプロバイダファイルにも記述してみる
+```php:app/Providers/SampleServiceProvider.php
+public function register(): void
+    {
+        app()->bind('ServiceProviderTest', function(){
+            return 'サービスプロバイダのテスト';
+        });
+    }
 ```
+- 次、このSampleServiceProviderを実際に起動するときに読み込むためのconfigフォルダの中のapp.phpを追記する
+
+3\. configファイルを編集する
+```php:config/app.php
+'providers' => ServiceProvider::defaultProviders()->merge([
+    /*
+        * Package Service Providers...
+        */
+
+    /*
+        * Application Service Providers...
+        */
+    App\Providers\AppServiceProvider::class,
+    App\Providers\AuthServiceProvider::class,
+    // App\Providers\BroadcastServiceProvider::class,
+    App\Providers\EventServiceProvider::class,
+    App\Providers\RouteServiceProvider::class,
+    App\Providers\SampleServiceProvider::class // 追加
+])->toArray(),
+```
+- これでSampleServiceProviderもサービスコンテナに登録されて使えるようになった。
+
+4\. 登録したものを実際に表示させてみる
+```php:app/Http/Controllers/LifeCycleTestController.php
+public function showServiceProviderTest()
+{
+    $encrypt = app()->make('encrypter');
+    $password = $encrypt->encrypt('password');
+
+    $sample = app()->make('serviceProviderTest'); // 追加
+
+    dd($sample, $password, $encrypt->decrypt($password)); // $sampleをddの中へ入れて表示させる
+}
+    
+```
+
+1\. ローカルサーバを立ち上げて確認する
+```
+php artisan serve
+```
+- http://127.0.0.1:8000/serviceprovidertest
+- 一番上に「サービスプロバイダのテスト」という文字が表示されている
+- サービスプロバイダのファイルを作成してPHPの中に書いてあげると自動的にサービスコンテナの中に登録される。それをコントローラの中などでいつでも使用できる。
+
 1\.
 ```
 ```
