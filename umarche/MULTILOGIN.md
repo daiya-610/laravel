@@ -257,14 +257,41 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 ```
-1\.
+
+## sec106 ビュー（レイアウト）
+1\. Layoutフォルダ内も編集が必要
+- navigation.blade.phpをそれぞれ
+- user-navigation.blade.php
+- owner-navigation.blade.php
+- admin-navigation.blade.php とコピーする
+
+2\. App.blade.phpに条件追加（auth(ガード)）
 ```
+@if(auth('admin')->user())
+    @include('layouts.admin-navigation')
+@elseif(auth('owners')->user())
 ```
-1\.
-```
-```
-1\.
-```
+
+---
+---
+
+## sec110 ロゴ設定
+- 画像の保存場所・・・基本的に2種類ある
+1) publicフォルダに直接置く・・・初期ファイル ←今回はこっち
+2) storageフォルダ・・・フォルダ内画像はgitHubにアップロードしないという設定になっている
+- 表側(public)から見れるようにリンク
+- php artisan storage:link
+- public/storage リングが生成される
+
+- asset() ヘルパ関数でpublic内のファイルを指定
+
+- assets("images/logo.jpg")を
+components/application-logo.blade.phpに記載
+
+- 表示された画像が大きい、調整する場合はviewsのファイルで調整する
+1\. 画像の大きさ調整
+```php:resources/views/admin/auth/login.blade.php
+
 ```
 1\.
 ```
