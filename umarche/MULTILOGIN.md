@@ -293,6 +293,113 @@ components/application-logo.blade.phpに記載
 ```php:resources/views/admin/auth/login.blade.php
 
 ```
+
+## sec111 リソースコントローラー
+1\.下記コマンドを叩く
+```
+php artisan make:controller Admin/OwnersController --resource
+```
+
+2\. Routeのファイルを編集する
+```php:routes/admin.php
+use App\Http\Controllers\Admin\OwnersController;
+
+Route::resource('owners', OwnersController::class); // この状態だとログインしていなくても表示されてしまうためログインしてるかどうかの認証を追加をする
+->middleware('auth:admin');
+```
+
+3\. コントローラ側でも設定を追加する
+```php:app/Http/Controllers/Admin/OwnersController.php
+public function __construct()
+    {
+        $this->middleware('auth:admin');
+    }
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
+1\.
+```
+```
+
 1\.
 ```
 ```
