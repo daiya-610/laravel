@@ -316,24 +316,78 @@ public function __construct()
     }
 ```
 
-1\.
+## sec112 シーダー（ダミーデータ）作成
+1\.database/seeders 直下に生成
 ```
-```
-
-1\.
-```
-```
-
-1\.
-```
+php artisan make:seeder AdminSeeder
+php artisan make:seeder OwnerSeeder
 ```
 
-1\.
+2\. シーダー(ダミーデータ)の設定方法
+- 2種類ある - 手動か自動化
+- DBファサードのinsertで連想配列で追加
+- パスワードがあればHashファサードも使う
+```php:手動
+DB:tables('owners')->insert([
+    ['name' => 'test'], 'email' => 'test1@test.com',
+    Hash::make('password123')]
+]);
 ```
+```php
+// DatabaseSeeder.php内で読み込み設定
+$this->call([
+    AdminSeeder, OwnerSeeder
+]);
 ```
 
-1\.
+3\. シーダーファイルの編集
 ```
+public function run(): void
+    {
+        DB::table('admins')->insert([
+            'name' => 'test',
+            'email' => 'test@test.com',
+            'password' => Hash::make('password123'),
+            'created_at' => '2024/05/05 11:11:11'
+        ]);
+    }
+```
+
+4\. シーダーの実行
+```
+php artisan db:seed
+```
+- デフォルト：Database/Seeders/DatabaseSeederクラスを実行
+
+```
+php artisan db:seed --class=UserSeeder
+```
+- --classオプションを使用して個別に実行する特定のシーダークラスを指定できる
+
+```
+php artisan migrate:fresh --seed
+// 前テーブルを削除してup()を実行
+```
+
+```
+php artisan migrate:refresh --seed
+// down()を実行後up()を実行
+```
+
+- migrate:fresh コマンドを --seed オプションと組み合わせて使用してデータベースをシードすることもできる。
+- これにより全てのテーブルが削除され、全てのマイグレーションが再実行される。
+- このコマンドはデータベースを完全に再構築するのに役立つ
+
+4-1\. シーダーを実行すると下記エラーが出る
+```
+$ php artisan db:seed
+SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'test@test.com' for key 'admins_email_unique' (Connection: mysql, SQL: insert into `admins` (`name`, `email`, `password`, `created_at`) values (test, test@test.com, $2y$12$78quGcNcr0cAGSsksealUOF3oVbJ3BcKixAyiVb5uRKGIGisi87Lq, 2024/05/05 11:11:11))
+```
+- メールアドレスが重複しているので登録できないというエラーが出ている。
+- テーブル毎に作る必要がある。
+
+```
+php artisan migrate:refresh --seed
 ```
 
 1\.
