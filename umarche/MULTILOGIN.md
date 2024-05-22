@@ -390,13 +390,45 @@ SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'test@test
 php artisan migrate:refresh --seed
 ```
 
-1\.
-```
-```
+## sec113 データを扱う方法　比較
+|  | コレクション <br> (Collection) | クエリビルダ <br> (QueryBuilder) | エロクアント <br> (Eloquent(モデル)) |
+| ---- | ---- | ---- | ---- |
+| データ型 | Illuminate\Support\Collection | Illuminate\Support\Collection | Illuminate\Database\Eloquent\Collection(Collection を継承) |
+| 使用方法 | collect(); <br> new Collection; | use Illuminate\Support\Facades\DB; <br> DB:table(テーブル名)->get(); | モデル名::all(); <br> モデル名::select()->get(); |
+| 関連マニュアル | コレクション | コレクション <br> クエリビルダ | コレクション、クエリビルダ、エロクアント、エロクアントのコレクション |
+| 特徴 | 配列を拡張 | SQLに近い | ORマッパー |
+| メリット | 多数の専用メソッド | SQLを知っているとわかやすい | 簡潔にかける <br> リレーションが強力 |
+| デメリット | 返り値に複数のパターンあり <br> (stdClass, Collection, モデルCollection) | コードが長くなりがち | 覚えることが多い <br> やや遅い |
 
-1\.
+1\. コントローラファイルを編集する
+```php:app/Http/Controllers/Admin/OwnersController.php
+use App\Models\Owner; // Eloquent エロクアント
+use Illuminate\Support\Facades\DB; // QueryBuilder クエリビルダ
+
+public function index()
+    {
+        $e_all = Owner::all();
+        $q_get = DB::table('owners')->select('name')->get();
+        $q_first = DB::table('owners')->select('name')->first();
+
+        $c_test = collect([
+            'name' => 'てすと'
+        ]);
+
+        dd($e_all, $q_get, $q_first, $c_test);
+    }
 ```
+- queryBuilderのfirstに関してはver_dumpを使うとスタンダードクラスだとわかりやすい
+1-1\.
+```php:app/Http/Controllers/Admin/OwnersController.php
+var_dump($q_first);
 ```
+- object(stdClass)#1495 (1) { ["name"]=> string(5) "test1" }
+- Laravelでデータを扱う際はコレクションを扱うことが多い。
+- コレクションの中にもSupportのコレクション or エロクアントのコレクション 2種類ある。
+- Collection or stdClassで返ってくるパターンもある。
+- データがうまく返ってこない場合は「dd」などを使ってデータの型を見つつ進めていく必要がある。
+
 
 1\.
 ```
