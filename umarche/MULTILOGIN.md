@@ -429,18 +429,71 @@ var_dump($q_first);
 - Collection or stdClassで返ってくるパターンもある。
 - データがうまく返ってこない場合は「dd」などを使ってデータの型を見つつ進めていく必要がある。
 
+## sec114 Carbon ライブラリ
+- Carbon
+PHPのDateTimeクラスを拡張した
+日付ライブラリ
+Laravelに標準搭載
+- 公式サイト： https://carbon.nesbot.com/
+- 個人ブログ： https://coinbaby8.com/carbon-laravel.html
+- エロクアントのtimestampはCarbonインスタンス
+- $eloquents->created_at->diffForHumans()
+- クエリビルダでCarbonを使うなら
+- Carbon\Carbon::parse($query->created_at)->diffForHumans()
 
-1\.
-```
+1\. コントローラファイルを編集する
+```php:app/Http/Controllers/Admin/OwnersController.php
+use Carbon\Carbon;
+
+echo $date_now;
+echo $date_parse;
 ```
 
-1\.
-```
+2\. Carbonをエロクアントとクエリビルダで表示する方法
+```php:app/Http/Controllers/Admin/OwnersController.php
+$e_all = Owner::all();
+$q_get = DB::table('owners')->select('name', 'created_at')->get();
+
+return view('admin.owners.index', compact('e_all', 'q_get'));
 ```
 
-1\.
+3\. viewsのフォルダ・ファイルを1つ作成する
 ```
+mkdir resources/views/admin/owners
+touch resources/views/admin/owners/index.blade.php
 ```
+
+- admin直下のdashboard.blade.phpをコピーし貼り付け・編集する
+```php:resources/views/admin/owners/index.blade.php
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Dashboard') }}
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    エロクアント
+                    @foreach ($e_all as $e_owner)
+                      {{ $e_owner->name }}
+                      {{ $e_owner->created_at->diffForHumans() }}
+                    @endforeach
+                    <br>
+                    クエリビルダ
+                    @foreach ($q_get as $q_owner)
+                      {{ $e_owner->name }}
+                      {{ Carbon\Carbon::parse($e_owner->created_at)->diffForHumans() }}
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
+```
+
 
 1\.
 ```
