@@ -632,33 +632,176 @@ public function index()
 </tbody>
 ```
 
-1\.
+## sec116 admin/owners 一覧画面（tailblock Contact Us使用）
+
+1\. viewsのadminにファイルを作成する
 ```
+touch resources/views/admin/owners/create.blade.php
 ```
+
+2\. dashboard.blade.phpの内容をコピーしつつ、tailblocksからコードを持ってくる。
+```
+cp resources/views/admin/dashboard.blade.php resources/views/admin/owners/create.blade.php
+```
+
+```php:resources/views/admin/owners/create.blade.php
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Dashboard') }}
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    {{ __("You're logged in!") }} // ←ここを削除してtailblocksの Contact Usのコードを全て追加する
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
+```
+
+4\. この状態で表示させたいがコントローラ側でviewヘルパ関数を書いてあげないといけないので編集する
+```php:app/Http/Controllers/Admin/OwnersController.php
+public function create()
+{
+  return view('admin.owners.create');
+}
+```
+
+5\. ローカルサーバで確認する
+```
+php artisan serve
+```
+- http://127.0.0.1:8000/admin/owners/create
+
+6\. admin/owners/create画面のデザインを整えていく
+```php:resources/views/admin/owners/create.blade.php
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            オーナー登録
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    <section class="text-gray-600 body-font relative">
+                        <div class="container px-5 mx-auto">
+                          <div class="flex flex-col text-center w-full mb-12">
+                            <h1 class="sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900">オーナー登録</h1>
+                          </div>
+                          <div class="lg:w-1/2 md:w-2/3 mx-auto">
+                            <div class="-m-2">
+                              <div class="p-2 w-1/2 mx-auto">
+                                <div class="relative">
+                                  <label for="name" class="leading-7 text-sm text-gray-600">Name</label>
+                                  <input type="text" id="name" name="name" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                                </div>
+                              </div>
+                              <div class="p-2 w-1/2 mx-auto">
+                                <div class="relative">
+                                  <label for="email" class="leading-7 text-sm text-gray-600">Email</label>
+                                  <input type="email" id="email" name="email" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                                </div>
+                              </div>
+                              <div class="p-2 w-full flex justify-around mt-4">
+                                <button onclick="location.href='{{ route('admin.owners.index')}}'" class="bg-gray-200 border-0 py-2 px-8 focus:outline-none hover:bg-igray-400 rounded text-lg">戻る</button>
+                                <button class="bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">登録する</button>
+                              </div>
+                          </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
+```
+
+7\. admin/ownersにもボタンを追加する
+```php:resources/views/admin/owners/index.blade.php
+<div class="flex justify-end mb-4">
+    <button onclick="location.href='{{ route('admin.owners.create')}}'" class="bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">新規登録する</button>
+</div>
+```
+
+8\. オーナー登録においてパスワードの項目も必要だったので
+パスワードのインプットタグを用意する
+```php:resources/views/admin/owners/create.blade.php
+<div class="-m-2">
+    <div class="p-2 w-1/2 mx-auto">
+    <div class="relative">
+        <label for="name" class="leading-7 text-sm text-gray-600">オーナー名</label>
+        <input type="text" id="name" name="name" required class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+    </div>
+    </div>
+    <div class="p-2 w-1/2 mx-auto">
+    <div class="relative">
+        <label for="email" class="leading-7 text-sm text-gray-600">メールアドレス</label>
+        <input type="email" id="email" name="email" required class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+    </div>
+    </div>
+    <div class="p-2 w-1/2 mx-auto">
+    <div class="relative">
+        <label for="password" class="leading-7 text-sm text-gray-600">パスワード</label>
+        <input type="password" id="password" name="password" required class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+    </div>
+    </div>
+    <div class="p-2 w-1/2 mx-auto">
+    <div class="relative">
+        <label for="password_confirmation" class="leading-7 text-sm text-gray-600">パスワード確認</label>
+        <input type="password_confirmation" id="password_confirmation" name="password_confirmation" required class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+    </div>
+    </div>
+    <div class="p-2 w-full flex justify-around mt-4">
+    <button onclick="location.href='{{ route('admin.owners.index')}}'" class="bg-gray-200 border-0 py-2 px-8 focus:outline-none hover:bg-igray-400 rounded text-lg">戻る</button>
+    <button class="bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">登録する</button>
+    </div>
+</div>
+```
+
+
 
 1\.
 ```
 ```
 
-1\.
-```
-```
 
 1\.
 ```
 ```
 
-1\.
-```
-```
 
 1\.
 ```
 ```
 
+
 1\.
 ```
 ```
+
+
+1\.
+```
+```
+
+
+1\.
+```
+```
+
+
+1\.
+```
+```
+
 
 1\.
 ```
