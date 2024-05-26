@@ -766,6 +766,15 @@ php artisan serve
 </div>
 ```
 
+## sec117 登録する処理
+- 前回まではcreate画面でフォームを用意した。
+- 今回は登録するボタンで登録処理を行う。
+- Formタグ、method="post" action=store 指定
+- @csrf 必須
+- 戻るボタンは type="button"をつけておく
+- inputタグ name="" 属性を
+Request $requestインスタンスで取得
+dd($request->name);
 
 
 1\.
