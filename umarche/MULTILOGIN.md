@@ -766,20 +766,40 @@ php artisan serve
 </div>
 ```
 
-## sec117 登録する処理
+## sec117 登録する処理 - CRUD(Store)
 - 前回まではcreate画面でフォームを用意した。
 - 今回は登録するボタンで登録処理を行う。
 - Formタグ、method="post" action=store 指定
 - @csrf 必須
 - 戻るボタンは type="button"をつけておく
 - inputタグ name="" 属性を
-Request $requestインスタンスで取得
+Request $request インスタンスで取得
 dd($request->name);
-
-
-1\.
-```
-```
+- 保存する際にバリデーション機能を追加。
+- 1. View
+バリデーションで画面読み込み後も入力した値を保持したい場合
+- <input name="email" value="{{ old('email') }}">
+- 2. Model - プロパティで必要な情報を指定する必要がある。
+$fillable or $guarded で設定
+- procted $fillable = [
+    'name',
+    'email',
+    'password',
+];
+- 3. Controller - バリデーション設定
+簡易バリデーション or カスタムリクエスト
+- $request->validate([
+    'name' => 'required|string|max:255',
+    'email' => 'required|string|email|max:255|unique:owners',
+    'password' => 'required|string|confirmed|min:8',
+]);
+- 4. Controller - 保存処理
+Owner::create([
+    'name' => $request->name,
+    'email' => $request->email,
+    'password' => Hash::make($request->password),
+]);
+return redirect()->route('admin.owners.index'); 
 
 
 1\.
