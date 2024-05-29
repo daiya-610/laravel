@@ -802,7 +802,38 @@ Owner::create([
 return redirect()->route('admin.owners.index'); 
 
 
-1\.
+## sec118 Store フラッシュメッセージ1
+- 英語だとtoaster
+- Sessionを使って1度だけ表示
+
+- Controller側
+```
+session()->flash('message', '登録できました。');
+Session::flash('message', '');
+# 数秒後に消したい場合はJSも必要
+```
+
+- View側(コンポーネント)
+```
+@props(['status' => 'info'])
+
+@php
+if($status === 'info') { $bgColor = 'bg-blue-300'; }
+if($status === 'error') { $bgColor = 'bg-red-500'; }
+@endphp
+
+@if(session('message'))
+    <div class="{{ $bgColor }} w-1/2 mx-auto p-2 text-white">
+        {{ session('message' )}}
+    </div>
+@endif
+
+```
+
+- View側 <x-flash-messae status="info" />
+
+
+1\. 
 ```
 ```
 
