@@ -852,6 +852,19 @@ $owner = Owner::findOrFail($id); // idなければ404画面
 route('admin.owners.edit', ['owner' => $owner->id ]);
 ```
 
+## sec120 resourceController Update（更新）
+- Controller側
+```
+$owner = Owner::findOrFail($id);
+$owner->name = $request->name;
+$owner->email = $request->email;
+$owner->password = Hash::make($request->password);
+$owner->save();
+
+redirect()->route()->with();
+```
+
+
 1\.
 ```
 ```
