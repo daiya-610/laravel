@@ -832,11 +832,25 @@ if($status === 'error') { $bgColor = 'bg-red-500'; }
 
 - View側 <x-flash-messae status="info" />
 
-
-1\. 
+sec119_resourceRestfulControllerEditUpdate
+1\. Edit 編集
+- ルート情報確認コマンド
 ```
+php artisan route:list | grep admin.
 ```
 
+- Controller側
+```
+$owner = Owner::findOrFail($id); // idなければ404画面
+```
+
+- View側/edit
+```
+{{ $owner->name}}
+
+- View側/index 名前付きルート 第2引数にidを指定
+route('admin.owners.edit', ['owner' => $owner->id ]);
+```
 
 1\.
 ```
