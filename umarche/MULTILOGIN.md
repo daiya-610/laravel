@@ -883,6 +883,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use SoftDeletes;
 ```
 
+- 追加後はmigrationコマンドを叩く
+```
+php artisan migrate:refresh --seed
+```
+
 - コントローラ側
 ```
 Owner::findOrFail($id)->delete(); // ソフトデリート
