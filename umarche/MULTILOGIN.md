@@ -864,8 +864,56 @@ $owner->save();
 redirect()->route()->with();
 ```
 
+## sec121 Delete ソフトデリート
+1）論理削除（ソフトデリート）->復元できる（（ゴミ箱）
+2）物理削除（デリート）->復元できない
 
-1\.
+- マイグレーション側
+```
+$table->softDeletes();
+```
+
+- モデル側
+```
+use Illuminate\Database\Eloquent\SoftDeletes;
+```
+
+- モデルのクラス内
+```
+use SoftDeletes;
+```
+
+- コントローラ側
+```
+Owner::findOrFail($id)->delete(); // ソフトデリート
+Owner::all(); // ソフトデリートしたものは表示されない
+Owner::onlyTrashed()->get(); // ゴミ箱のみ表示
+Owner::withTrashed()->get(); // ゴミ箱も含め表示
+
+Owner::onlyTstashed()->restore(); // 復元
+Owner::onlyTrashed()->forceDelete(); // 完全削除
+
+$owner->trashed() // ソフトデリートされているかの確認
+```
+
+- Delete アラート表示（JS）
+```
+<form id="delete_{{$owner->id}}" method="post"
+action = "{{ route('admin.owners.destroy', ['owner' => $owner->id])}}">
+    @csrf @method('delete')
+<a href="#" data-id="{{ $owner->id }}" onclick="deletePost(this)">削除</a>
+
+<script>
+    function deletePost(e) {
+        'use strict';
+        if(confirm('本当に削除してもいいですか？')) {
+            document.getElementById('delete_' + e.dataset.id).submit();
+        }
+    }
+</script>
+```
+
+1\. view側を作成する
 ```
 ```
 
