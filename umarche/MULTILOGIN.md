@@ -918,8 +918,51 @@ action = "{{ route('admin.owners.destroy', ['owner' => $owner->id])}}">
 </script>
 ```
 
-1\. view側を作成する
+## sec123 ソフトデリート（期限切れオーナー）
+- 月額会員・年間会員で更新期限切れ
+->延滞料金を払ったら戻せる、など。
+->復旧できる手段を残しておく。
+
+- View: admin/expired-owners.blade.php
+
+- 注意：データとして残るので同じメールアドレスで新規登録できない
+->復旧方法などの案内が別途必要。
+
+- 期限切れオーナー - Route側
 ```
+Route::prefix('expired-owners')->
+middleware('auth:admin')->group(
+    function(){
+        Route::get('index', [OwnersController::class, 'expiredOwnerIndex'])->name('expired-owners.index');
+        Route::post('destroy/{owner}', [OwnersController::class, 'expiredOwnerDestroy'])->name('expired-owners.destroy');
+    }
+);
+```
+
+- 期限切れオーナー - Controller側
+```
+public function expiredOwnerIndex() {
+    $expiredOwners = Owner::onlyTrashed()->get(); // onlyTrashed()でソフトデリートしたデータだけ取得できる（ソフトデリートした日付けなど）
+    return view('admin.expired-owners',
+    compact('expiredOwners'));
+}
+
+public function expiredOwnerDestroy($id) {
+    Owner::onlyTrashed()->findOrFail($id)->forceDelete();
+    return redirect()->route('admin.expired-owners.index');
+}
+```
+
+- 期限切れオーナー - View側
+```
+@foreach ($expiredOwners as $owner)
+
+<form id="delete_{{$owner->id}}" method="post" action="{{ route('admin.expired-owners.destroy', ['owner' => $owner->id])}}">
+@csrf
+<td class="px-4 py-3 text-center">
+<a href="#" data-id="{{ $owner->id}}" onclick="deletePost(this)" class="text-white bg-red-400 border-0 p-2 focus:outline-none hover:bg-red-500 rounded">完全に削除</a>
+</td>
+</form>
 ```
 
 
