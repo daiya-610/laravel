@@ -965,16 +965,30 @@ public function expiredOwnerDestroy($id) {
 </form>
 ```
 
+## sec124_ページネーション
+- オーナーの数が増えてくるとリストが長くなるので
+paginationを設定しておく。
 
-1\.
+- Controller側
 ```
-```
-
-
-1\.
-```
+$owners = Owner::select('id', 'name', 'email', 'created_at', 'desc')
+    ->orderBy('created_at', 'desc')
+    ->paginate(3);
 ```
 
+- View側
+```
+{{ $owners->links() }}
+```
+
+1\. ページネーションの日本語か
+- vendorフォルダ内ファイルをコピー
+```
+php artisan vendor:publish --tag=laravel-pagination
+```
+
+2\. resources/views/vendor/pagination/tailwindcss.blade.php
+- ファイル内を編集
 
 1\.
 ```
