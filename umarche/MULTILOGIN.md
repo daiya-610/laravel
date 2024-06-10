@@ -990,6 +990,24 @@ php artisan vendor:publish --tag=laravel-pagination
 2\. resources/views/vendor/pagination/tailwindcss.blade.php
 - ファイル内を編集
 
+## sec125 ルート情報の編集 レスポンシブ修正
+- 新規登録はしない、ようこそ画面不要
+->registration, welcome コメントアウト
+
+```
+Route::resource('owners', OwnersController::class)
+->expect(['show]);
+```
+
+- View側の編集
+- <x-responsive-nav-link> にもリンク追加
+
+- レスポンシブ対応
+x方向（横方法）のmargin, paddingに
+md: をつける（768px以上, タブレット）
+```
+```
+
 1\.
 ```
 ```
