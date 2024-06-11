@@ -1005,17 +1005,100 @@ Route::resource('owners', OwnersController::class)
 - レスポンシブ対応
 x方向（横方法）のmargin, paddingに
 md: をつける（768px以上, タブレット）
-```
+
+## sec126 マルチログインの不具合対策
+- 「admin」でログインした状態で「owner」でログインすると
+「admin」のナビゲーションメニューが表示されてしまう
+
+- デバッグ
+原因調査：ログイン時の挙動確認。
+login::post時にセッションを再作成しているログを仕込んでセッション内容を確認
+
+```php:App/Http/Controllers/Admin/Auth/AuthenticatedSessionController
+use Illuminate\Support\Facades\Log;
+
+...
+$request->session()->regenerate();
+
+Log::debug('admin:', $request->session()->all()); //追記
+
+return ...
 ```
 
-1\.
-```
+```php:App/Http/Controllers/Owner/Auth/AuthenticatedSessionController
+Log::debug('owners:', $request->session()->all()); //追記
 ```
 
 
-1\.
+1\. 調査①ログからセッションの情報を確認する
+```log:storage/logs/laravel.log
+[2024-06-11 00:02:10] local.DEBUG: owner {
+"_token":"LnlHVbAZ3bp1QrA7sBZABJ16IrEQiu9K96JYWXHH",
+"url":[],
+"_previous":{"url":"http://127.0.0.1:8000/owner/login"},
+"_flash":{"old":[],"new":[]},
+"login_admin_59ba36addc2b2f9401580f014c7f58ea4e30989d":1,
+"login_owners_59ba36addc2b2f9401580f014c7f58ea4e30989d":1} 
 ```
+- local.DEBUG: owner() : オーナーとしてログインしている
+- 下2行：adminとowner : オーナーでログインする前にアドミンでログインしたため２つのセッション情報が残っている
+→それぞれのログイン毎にセッション情報が別で生成されていることがわかる
+
+
+2\. 調査②ブラウザ上の検証ツールで確認する
+- アプリケーション->セッション情報を確認する
+- ブラウザ側で持っているセッションは１つしかないことがわかる
+→ログイン処理：クッキーとセッションを紐付けて管理していくのだが、その整合性が取れていない。
+
+3\. 調査③ Layouts/app.blade.php
+- @if(auth('admin')->user())
+からスタートしていたので
+admin でログインした後 owner でログインしてもadminのメニューが表示されていた
+
+4\. 対策① セッション・クッキー
+- .envに追記
+```env
+SESSION_COOKIE=user
+SESSION_COOKIE_OWNER=owner
+SESSION_COOKIE_ADMIN=admin
 ```
+
+- config/session.php
+```
+'cookie' => env('SESSION_COOKIE',
+Str::slug(env('APP_NAME', 'laravel'), '_').'_session'),
+// 追記
+'cookie_owner' => env(
+    'SESSION_COOKIE_OWNER',
+    Str::slug(env('APP_NAME', 'laravel'), '_').'_session_owner'
+),
+// 追記
+'cookie_admin' => env(
+    'SESSION_COOKIE_ADMIN',
+    Str::slug(env('APP_NAME', 'laravel'). '_').'_session_admin'
+),
+```
+
+5\. 対策① クッキー
+- URLによってどのクッキーを使うか判定をかける
+- app/Providers/AppServiceProvider.php
+```php:app/Providers/AppServiceProvider.php
+public function boot()
+{
+    //ownerから始まるURL
+    if (request()->is('owner*')) {
+        config(['session.cookie' => config('session.cookie_owner')]);
+    }
+
+    // adminから始まるURL
+    if (request()->is('admin*')) {
+        config(['session.cookie' => config('session.cookie_admin')]);
+    }
+}
+```
+- bootメソッド：ページが読み込まれるたびに自動的に実行される
+
+
 
 
 1\.
