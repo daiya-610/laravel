@@ -1,5 +1,5 @@
 # オーナー概要
-## オーナーでできること
+## sec200 オーナーでできること
 - オーナープロフィール編集
 - 店舗情報更新(1オーナー 1店舗)
 - 画像登録
@@ -77,3 +77,86 @@ $this->call([
 ```
 php artisan migrate:fresh --seed
 ```
+
+## sec201 Shop リレーション 1対1
+- オーナー：１つのショップで複数の商品を扱うことを想定
+
+### Eloquent リレーション設定
+- Owner
+```
+use App\Models\Shop;
+public function shop()
+{
+    return $this->hasOne(Shop::class);
+}
+```
+
+- Shop
+```
+use App\Models\Owner;
+public function owner()
+{
+    return $this->belongsTo(Owner::class);
+}
+```
+
+### Laravel Tinker で確認
+```
+php artisan tinker
+```
+
+```
+$owner1 = App\Models\Owner::find(1)->shop;
+// ... Ownerに紐づくShop情報を動的に取得
+```
+
+```
+$shop1 = App\Models\Shop::find(1)->owner;
+// ... Shopに紐づくOwner情報を動的に取得
+```
+
+1. 各モデルを編集する
+
+```php:app/Models/Owner.php
+public function shop()
+    {
+        return $this->hasOne(Shop::class);
+    }
+```
+
+```php:app/Models/Owner.php
+
+```
+
+```php:app/Models/Shop.php
+class Shop extends Model
+{
+    use HasFactory;
+
+    public function owner()
+    {
+        return $this->belongsTo(Owner::class);
+    }
+}
+```
+
+2. 紐づいているモデルが取得できるか確認する
+
+```
+php artisan tinker
+```
+
+```
+> $owner1 = App\Models\Owner;;find(1);
+> $owner1 = App\Models\Owner::find(1)->shop;
+> $owner1 = App\Models\Owner::find(1)->shop->name;
+> $owner1 = App\Models\Owner::find(1)->shop->is_selling;
+
+
+> $owner1 = App\Models\Shop::find(1)->owner; 
+> $owner1 = App\Models\Shop::find(1)->owner->name; 
+> $owner1 = App\Models\Shop::find(1)->owner->email;  
+
+quit
+```
+
