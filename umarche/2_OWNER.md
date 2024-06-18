@@ -124,10 +124,6 @@ public function shop()
     }
 ```
 
-```php:app/Models/Owner.php
-
-```
-
 ```php:app/Models/Shop.php
 class Shop extends Model
 {
@@ -159,4 +155,41 @@ php artisan tinker
 
 quit
 ```
+## sec202 Shopの作成　トランザクション
+### Shopの作成
+- Admin/OwnersController@store
 
+- 外部キー向けにidを取得
+```
+$owner = Owner::create();
+$owner->id;
+```
+
+-Shop::createで作成する場合はモデル側に $fillable も必要
+
+### トランザクション
+- 複数のテーブルに保存する際は
+トランザクションをかける
+無名関数内で親の変数を使うには use が必要
+```
+DB::transaction(function() use ($request){
+    DB::create($request->name);
+    DB::create($request->owner_id);
+}, 2) //NG時2回試す
+```
+
+### 例外 + ログ
+- トランザクションでエラー時は例外発生
+PHP7から　　Throwableで例外取得
+ログは strage/logs内に保存
+```
+use Throwable;
+use Illuminate\Support\Facades\Log;
+
+try {
+    トランザクション処理
+} catch( Throwable $e) {
+    Log::error($e);
+    throw $e;
+}
+```
