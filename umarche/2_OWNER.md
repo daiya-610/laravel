@@ -202,3 +202,151 @@ $table->foreignId('owner_id')
     ->onUpdate('cascade')
     ->onDelete('cascade');
 ```
+## sec204 Shop Index(Route, Controller, View)
+### Shopの一覧/編集/更新
+### リソース（Restful）コントローラ
+- CRUD(新規作成、表示、更新、削除)
+- C(create, store), R(index, show, edit),U(update),D(destroy)
+表示・・GET、DBに保存・・POST
+
+### Shop 表示までの設定
+- Route
+- index, edit, update の3つ
+- owner.shop.index など
+
+- View
+- ロゴサイズ調整, Owner-navigation
+
+- Controller・・ShopController
+- __construct で$this->middleware('auth:owners');
+
+- indexメソッド
+```
+Use illuminate\Support\Facades\Auth;
+$ownerId = Auth::id(); // 認証されているid
+$shops = Shop::where('owner_id', $ownerId)->get(); // whereは検索条件（「'owner_id'」を「ログインしている「$ownerId」で検索しつつgetで取得すれば、ログインしている「$ownerId」が入ったShopだけが取得できる）
+```
+
+1. routes/owner.php を編集
+```
+use App\Http\Controllers\Owner\ShopController;
+
+Route::prefix('shop')->
+middleware('auth:owners')->group(
+    function(){
+        Route::get('index', [ShopController::class, 'index'])->name('shops.index');
+        Route::get('edit/{shop}', [ShopController::class, 'edit'])->name('shops.edit');
+        Route::post('update/{shop}', [ShopController::class, 'update'])->name('shops.update');
+    }
+);
+```
+
+2. shopコントローラを作成
+```
+php artisan make:controller Owner/ShopController
+```
+
+3. shopコントローラ編集
+```
+<?php
+
+namespace App\Http\Controllers\Owner;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+Use illuminate\Support\Facades\Auth;
+use App\Models\Shop;
+
+class ShopController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware('auth:owners');
+    }
+
+    public function index()
+    {
+        $ownerId = Auth::id();
+        $shops = Shop::where('owner_id', $ownerId)->get();
+
+        return view('owner.shops.index',
+        compact('shops'));
+    }
+
+    public function edit(string $id)
+    {
+    }
+
+    public function update(Request $request, string $id)
+    {
+    }
+}
+```
+
+4. View側のファイル作成
+```php:resources/views/owner/shops/edit.blade.php
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Dashboard') }}
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    {{ __("You're logged in!") }}
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
+
+```
+
+```php:resources/views/owner/shops/index.blade.php
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Dashboard') }}
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    @foreach ($shops as $shop)
+                        {{ $shop->name }}
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
+
+```
+
+```php:resources/views/layouts/owner-navigation.blade.php
+<!-- Navigation Links -->
+<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+    <x-nav-link :href="route('owner.dashboard')" :active="request()->routeIs('owner.dashboard')">
+        {{ __('Dashboard') }}
+    </x-nav-link>
+    <x-nav-link :href="route('owner.shops.index')" :active="request()->routeIs('owner.shops.index')">
+        店舗情報
+    </x-nav-link>
+</div>
+
+<!-- Responsive Navigation Menu -->
+<div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+    <div class="pt-2 pb-3 space-y-1">
+        <x-responsive-nav-link :href="route('owner.dashboard')" :active="request()->routeIs('owner.dashboard')">
+            {{ __('Dashboard') }}
+        </x-responsive-nav-link>
+        <x-responsive-nav-link :href="route('owner.shops.index')" :active="request()->routeIs('owner.shops.index')">
+            店舗情報
+        </x-responsive-nav-link>
+    </div>
+```
