@@ -193,3 +193,12 @@ try {
     throw $e;
 }
 ```
+
+## sec203 Shopの削除　カスケード
+- Owner->shop と外部キー制約を設定しているため追加設定が必要。
+```
+$table->foreignId('owner_id')
+    ->constrained()
+    ->onUpdate('cascade')
+    ->onDelete('cascade');
+```
