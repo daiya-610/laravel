@@ -376,3 +376,14 @@ $this->middleware(function($request, $next) {
     return $next($request);
 });
 ```
+
+## sec206 Shop カスタムHTTPエラーページ
+- Laravelのデフォルトのエラーページテンプレートデザインをカスタムする
+```
+php artisan vendor:publish --tag=laravel-errors
+```
+
+- リソースのviewsに新しくerrorsというディレクトリが作成され、エラー毎のファイルが吐き出されている。
+- minimalだったり、layoutだったり、それぞれ表示させたいデザインによって
+パスの指定をしたりデザインをカスタムすることが可能
+
