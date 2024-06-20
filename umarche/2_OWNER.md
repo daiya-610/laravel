@@ -350,3 +350,29 @@ class ShopController extends Controller
         </x-responsive-nav-link>
     </div>
 ```
+
+## sec205 Shop コントローラ　ミドルウェア
+### Shop ルートパラメータの注意
+- /owner/shops/edit/2/
+
+- edit, update などURLにパラメータを使う場合
+URLの数値を直接変更すると
+他のオーナーのShopが見れてしまう。
+→ログイン済みオーナーのShop URL出なければ404を表示
+
+### Shop ミドルウェア設定
+- コンストラクタ内
+```
+$this->middleware(function($request, $next) {
+    $id = $request->route()->parameter('shop'); // shopのid取得
+    if(!is_null($id)) { //null判定
+        $shopsOwnerId = Shop::findOrFail($id)->owner->id;
+        $shopId = (int)$shopsOwnerId; // キャスト　文字列→数値に型変換
+        $ownerId = Auth::id();
+        if($shopId !== $ownerId) { // 同じでなかったら
+            abort(404); // 404画面表示
+        }
+    }
+    return $next($request);
+});
+```
