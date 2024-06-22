@@ -395,3 +395,33 @@ php artisan vendor:publish --tag=laravel-errors
 https://pixabay.com/ja/
 
 
+## sec208 画像アップロード
+### 画像アップロード
+- バリデーション->〇〇
+- 画像サイズ（1920px × 1080px (FullHD)）
+-> ①ユーザ側でリサイズしてもらう
+-> ②サーバー側でリサイズする
+ -> Intervention Imageを使う
+- 重複しないファイル名にて変更、保存
+
+### 画像アップロード　ビュー側
+- View側
+```
+<form method="post" action="" enctype="multipart/form-data">
+
+<input type="file" accept="image/png, image/jpeg, image/jpg">
+```
+
+### 画像アップロード　コントローラ側
+- リサイズしないパターン（putFileでファイル名生成）
+```
+use Illuminate\Support\Facades\Storage;
+
+public function update(Request $request, $id)
+    {
+        $imageFile = $request->image;
+        if(!is_null($imageFile) && $imageFile->isValid() ){
+            Storage::putFile('public/shops', $imageFile);
+        }
+    }
+```
