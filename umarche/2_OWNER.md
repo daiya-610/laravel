@@ -387,3 +387,11 @@ php artisan vendor:publish --tag=laravel-errors
 - minimalだったり、layoutだったり、それぞれ表示させたいデザインによって
 パスの指定をしたりデザインをカスタムすることが可能
 
+## sec207 Shop Index画面
+### Shop Index画面
+- 初期設定 NO IMAGE画像
+
+- 無料画像サイト
+https://pixabay.com/ja/
+
+
