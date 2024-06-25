@@ -425,3 +425,37 @@ public function update(Request $request, $id)
         }
     }
 ```
+
+## sec209 フォームリクエスト（カスタムリクエスト）
+### フォームリクエスト　１
+```
+php  artisan make:request UploadImageRequest
+```
+
+- App\Http\Requests\UploadImageRequest.php が生成
+
+```
+public function authorize()
+{
+    return true;
+}
+
+public function rules()
+{
+    return [
+        'image'=>'image|mines:jpg,jpeg,png|max:2048',
+    ];
+}
+```
+
+### フォームリクエスト 2
+```
+public function messages()
+{
+    return [
+        'image' => '指定されたファイルが画像ではありません。',
+        'mines' => '指定された拡張子(jpg/jpeg/png)ではありません。',
+        'max' => 'ファイルサイズは2MB以内にしてください。',
+    ];
+}
+```
