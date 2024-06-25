@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-Use illuminate\Support\Facades\Auth;
+use illuminate\Support\Facades\Auth;
 use App\Models\Shop;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\UploadImageRequest;
 
 class ShopController extends Controller
 {
@@ -46,12 +47,14 @@ class ShopController extends Controller
         return view('owner.shops.edit' , compact('shop'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(UploadImageRequest $request, string $id)
     {
+        // バリデーションが通った後の処理
+        $validated = $request->validated();
         $imageFile = $request->image;
         if(!is_null($imageFile) && $imageFile->isValid() ){
             Storage::putFile('public/shops', $imageFile);
         }
-        return redirect()->route('owner.shops.index');
+        return redirect()->route('owner.shops.index')->with('success', '更新されました。');
     }
 }
