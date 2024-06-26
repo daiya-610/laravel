@@ -8,6 +8,7 @@ use illuminate\Support\Facades\Auth;
 use App\Models\Shop;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\UploadImageRequest;
+use App\Services\ImageService;
 
 class ShopController extends Controller
 {
@@ -50,10 +51,15 @@ class ShopController extends Controller
     public function update(UploadImageRequest $request, string $id)
     {
         // バリデーションが通った後の処理
-        $validated = $request->validated();
         $imageFile = $request->image;
         if(!is_null($imageFile) && $imageFile->isValid() ){
-            Storage::putFile('public/shops', $imageFile);
+            $fileNameToStore = ImageService::upload($imageFile, 'shops');
+            // Storage::putFile('public/shops', $imageFile);
+            // $fileName = uniqid(rand().'_');
+            // $extension = $imageFile->extension();
+            // $fileNameToStore = $fileName. '.' . $extension;
+
+            // Storage::put('public/shops/' .$fileNameToStore, $imageFile );
         }
         return redirect()->route('owner.shops.index')->with('success', '更新されました。');
     }
