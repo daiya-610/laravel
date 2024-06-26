@@ -459,3 +459,45 @@ public function messages()
     ];
 }
 ```
+
+## sec210 サービスへの切り離し
+### サービスへの切り離し
+- フォルダ作成
+```
+cd app
+mkdir Services
+cd Services
+touch ImageService.php
+```
+
+- app/Http/Controllers/Owner/ShopController.php の
+update関数で記述していたコードを丸ごと下記ディレクトリへ
+- app/Services/ImageService.php
+```
+<?php
+
+namespace App\Services;
+use Illuminate\Support\Facades\Storage;
+
+class ImageService
+{
+    public static function upload($imageFile, $folderName) {
+
+        $fileName = uniqid(rand().'_');
+        $extension = $imageFile->extension();
+        $fileNameToStore = $fileName. '.' . $extension;
+        Storage::put('public/' . $folderName . '/' .$fileNameToStore, $imageFile );
+
+        return $fileNameToStore;
+    }
+}
+```
+
+- ShopControllerにImageService.phpで定義したコードを適用する
+```
+use App\Services\ImageService;
+
+$fileNameToStore = ImageService::upload($imageFile, 'shops');
+```
+
+- これによりコードの重複もなくなり、関数内の処理も整理される。
