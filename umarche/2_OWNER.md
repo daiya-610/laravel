@@ -501,3 +501,18 @@ $fileNameToStore = ImageService::upload($imageFile, 'shops');
 ```
 
 - これによりコードの重複もなくなり、関数内の処理も整理される。
+
+## sec211 Shop Edit/Update
+### Shop Edit 残りのフォーム抜粋
+```
+店名 <input type="text">{{ $shop->name}}
+店舗情報 <textarea rows="10">{{ $shop->information}}</textarea>
+画像のサムネイル
+<div class="w-32">
+    <x-shop-thumbnail />
+</div>
+販売中/停止中
+<input type="radio" name="is_selling" value="1" @if($shop->is_selling = true) { checked } @endif>販売中
+<input type="radio" name="is_selling" value="0" @if($shop->is_selling = false) { checked } @endif>停止中
+```
+
