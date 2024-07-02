@@ -516,3 +516,28 @@ $fileNameToStore = ImageService::upload($imageFile, 'shops');
 <input type="radio" name="is_selling" value="0" @if($shop->is_selling = false) { checked } @endif>停止中
 ```
 
+## sec212 Shop Update
+### Shop Update残りのコード
+```
+$request->validate([
+    'name' => 'required|string|max:50',
+    'information' => 'required|string|max:1000',
+    'is_selling' => 'required',
+]);
+```
+
+```
+$shop = Shop::findOrFail($id)
+$shop->name = $request->name;
+$shop->information = $request->is_selling;
+
+if(!is_null($imageFile) && imageFile->isValid())
+{
+    $shop->filename = $fileNameToStore;
+}
+
+$shop->save();
+
+redirect()->route()->with([]); // フラッシュメッセージ
+```
+

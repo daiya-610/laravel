@@ -9,8 +9,9 @@ class ImageService
 
         $fileName = uniqid(rand().'_');
         $extension = $imageFile->extension();
-        $fileNameToStore = $fileName. '.' . $extension;
-        Storage::put('public/' . $folderName . '/' .$fileNameToStore, $imageFile );
+        $fileNameToStore = $fileName . '.' . $extension;
+        // ファイルを保存
+        Storage::putFileAs('public/' . $folderName, $imageFile, $fileNameToStore);
 
         return $fileNameToStore;
     }
