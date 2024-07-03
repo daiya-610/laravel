@@ -541,3 +541,28 @@ $shop->save();
 redirect()->route()->with([]); // フラッシュメッセージ
 ```
 
+## sec213 Image 雛形作成
+### Imageのモデル、マイグレーション
+```
+php artisan make:model Image -m
+
+// モデル
+$fillable = ['owner_id', 'filename'];
+// マイグレーション
+$table->foreignId('owner_id')->constrained()
+->onUpdate('cascade')
+->onDelete('cascade');
+$table->string(('filename');
+$table->string('title')->nullable();
+```
+
+### Imageのコントローラ
+```
+php artisan make:controller Owner/ImageController --resource
+
+// ルート
+Route::resource('images',
+ImageController::class)
+->middleware('auth:owners')->except('show');
+```
+
