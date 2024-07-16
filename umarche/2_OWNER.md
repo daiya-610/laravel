@@ -566,3 +566,24 @@ ImageController::class)
 ->middleware('auth:owners')->except('show');
 ```
 
+## sec214 ImageのIndex
+- コントローラ
+（constructはShopControllerを参考に）
+
+```
+public function index()
+{
+    $images = Image::where('owner_id', Auth::id())
+    ->orderby('updated_at', 'desc') // 降順(小さくなる)
+    ->paginate(20);
+
+    以下略
+}
+```
+
+- ビュー
+（shops/index.blade.phpを参考に）
+- コンポーネントをまとめるために変更
+```
+<x-thumbnail 略 type="products" />
+```
