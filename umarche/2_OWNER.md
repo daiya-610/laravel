@@ -587,3 +587,26 @@ public function index()
 ```
 <x-thumbnail 略 type="products" />
 ```
+
+## sec215 ImageのCreate, バリデーション Store
+
+### ImageのCreate と バリデーション
+（Shops/edit.blade.phpを参考に）
+
+- 画像の複数アップロード対応
+```
+<input type="file" name="files[][image]" multiple 略>
+```
+
+- フォームリクエストのrulesに下記を追加
+App/Http/Requests/UploadImageRequest.php
+
+```
+'files.*.image' => 'required|image|mimes:jpg.jpeg.png|max:2048',
+```
+https://readouble.com/laravel/10.x/ja/validation.html
+- 配列中の属性をバリデーションするために「ドット記法」が使える。
+
+
+
+
