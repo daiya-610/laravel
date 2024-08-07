@@ -608,5 +608,31 @@ https://readouble.com/laravel/10.x/ja/validation.html
 - 配列中の属性をバリデーションするために「ドット記法」が使える。
 
 
+## ImageのStore ImageController
+- ShopController@updateを参考
+```
+$imageFiles = $request->file('files');
+  if(!is_null($imageFiles)){
+    foreach($imageFiles as $imageFile){
+        $fileNameToStore = ImageService::upload($imageFile, 'products');
+        Image::create([
+            'owner_id' => Auth::id(),
+            'filename' => $fileNameToStore
+        ]);
+    }
+  }
+```
 
+```
+if(is_array($imageFile)){
+    $file = $imageFile['image'];
+} else {
+    $file = $imageFile;
+}
 
+$fileName = uniqid(rand().'_');
+$extension = $file->extension();
+$fileNameToStore = $fileName. '.' . $extension;
+$resizedImage = InterventionImage::make($file)->resize(1920.1080)->encode();
+Storage::put('public/' . $folderName . '/' . $fileNameToStore, $resizedImage);
+```
