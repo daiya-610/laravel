@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # Laravel用のPHPコンテナ
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_app
+    volumes:
+      - .:/var/www
+    ports:
+      - "9000:9000"
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  # MySQLコンテナ
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: laravel_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+
+volumes:
+  db_data:
