@@ -27,4 +27,4 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
 RUN chown -R www-data:www-data /var/www
 
 # ポート番号を指定
-EXPOSE 9000
+EXPOSE 80

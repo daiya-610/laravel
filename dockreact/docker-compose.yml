@@ -8,9 +8,9 @@ services:
       dockerfile: Dockerfile
     container_name: laravel_app
     volumes:
-      - .:/var/www
+      - ./laravel:/var/www
     ports:
-      - "9000:9000"
+      - "8000:80"
     networks:
       - app-network
     depends_on:
